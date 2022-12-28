@@ -1,0 +1,31 @@
+{
+   "name": "goaltracker-api",
+   "version": "1.0.0",
+   "main": "index.js",
+   "author": "Christian Velez Medina",
+   "license": "MIT",
+   "type": "module",
+   "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "NODE_ENV=production node index.js",
+      "dev": "nodemon index.js"
+   },
+   "dependencies": {
+      "apollo-server": "^3.11.1",
+      "bcrypt": "^5.1.0",
+      "dotenv": "^16.0.3",
+      "graphql": "^16.6.0",
+      "jsonwebtoken": "^9.0.0",
+      "mongoose": "^6.8.1",
+      "mongoose-unique-validator": "^3.1.0"
+   },
+   "devDependencies": {
+      "@babel/cli": "^7.20.7",
+      "@babel/core": "^7.20.7",
+      "@babel/preset-env": "^7.20.2",
+      "babel-eslint": "^10.1.0",
+      "babel-plugin-module-resolver": "^4.1.0",
+      "eslint": "^8.30.0",
+      "nodemon": "^2.0.20"
+   }
+}
