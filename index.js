@@ -75,6 +75,6 @@ const server = new ApolloServer({
    persistedQueries: false,
 })
 
-server.listen().then(({ url }) => {
+server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
    console.log(`Listening on ${url}`)
 })
