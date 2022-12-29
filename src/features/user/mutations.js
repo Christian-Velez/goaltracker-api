@@ -1,5 +1,9 @@
 import { AuthenticationError, UserInputError } from 'apollo-server'
-import { generateToken, checkPassword } from '../../helpers/credentials.js'
+import {
+   generateToken,
+   checkPassword,
+   hashPassword,
+} from '../../helpers/credentials.js'
 import { User } from './schema.js'
 
 export const UserMutationsDefs = `
@@ -17,9 +21,11 @@ export const UserMutationsDefs = `
 
 export const UserMutations = {
    createUser: async (root, args) => {
-      const user = new User({ ...args })
+      const { password, ...rest } = args
+      const passwordHash = await hashPassword(password)
 
       try {
+         const user = new User({ ...rest, password: passwordHash })
          const savedUser = await user.save()
          const token = generateToken(savedUser)
 
@@ -50,7 +56,6 @@ export const UserMutations = {
             token,
             user,
          }
-         
       } catch (err) {
          throw new UserInputError(err.message)
       }
