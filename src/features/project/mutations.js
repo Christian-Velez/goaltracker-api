@@ -5,12 +5,14 @@ import { Project } from './schema.js'
 export const ProjectMutationsDefs = `
    createProject(
       title: String!
+      description: String
       color: String!
    ): Project
 
    updateProject(
       id: ID!
       title: String!
+      description: String
       color: String!
    ): Project
 
