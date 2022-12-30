@@ -1,6 +1,7 @@
 import { AuthenticationError, UserInputError } from 'apollo-server'
 import { NotFoundError } from '../../graphql.js'
 import { Project } from './schema.js'
+import { DayStatus } from '../status/schema.js'
 
 export const ProjectMutationsDefs = `
    createProject(
@@ -49,11 +50,19 @@ export const ProjectMutations = {
          if (!project || project?.userId?.toString() !== userId.toString())
             throw new NotFoundError()
 
-         return await Project.findByIdAndUpdate(
+         const savedProject = await Project.findByIdAndUpdate(
             args.id,
             { ...args },
             { new: true }
          )
+         const daysAchieved = DayStatus.collection.countDocuments({
+            projectId: savedProject._id,
+         })
+
+         return {
+            ...savedProject?.toObject(),
+            daysAchieved,
+         }
       } catch (err) {
          throw new UserInputError(err.message)
       }
