@@ -30,7 +30,7 @@ export const ProjectQueries = {
             },
             { $addFields: { daysAchieved: { $size: '$statusList' } } },
             { $match: { userId: mongoose.Types.ObjectId(currentUser._id) } },
-            { $sort: { updatedAt: -1 } },
+            { $sort: { title: 1 } },
          ])
 
          return projects
