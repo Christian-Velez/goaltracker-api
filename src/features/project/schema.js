@@ -10,7 +10,7 @@ const projectSchema = new Schema(
       title: {
          type: Schema.Types.String,
          required: true,
-         maxLength: 20,
+         maxLength: 40,
       },
       description: {
          type: Schema.Types.String,
