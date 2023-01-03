@@ -80,6 +80,7 @@ export const ProjectMutations = {
             throw new NotFoundError()
 
          await Project.findByIdAndDelete(args.id)
+         await DayStatus.deleteMany({ projectId: args.id })
          return args.id
       } catch (err) {
          throw new UserInputError(err.message)
