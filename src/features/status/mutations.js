@@ -12,9 +12,44 @@ export const StatusMutationsDefs = `
    deleteStatus(
       id: ID!
    ): DeleteStatusResponse
+
+   updateStatus(
+      projectId: ID
+      date: String
+      marked: Boolean
+   ) : UpdateStatusResponse
 `
 
 export const StatusMutations = {
+   updateStatus: async (root, args, context) => {
+      if (!context?.currentUser?._id)
+         throw new AuthenticationError('Not authenticated')
+
+      const { projectId, date, marked } = args
+
+      const status = await DayStatus.findOne({
+         projectId,
+         date,
+      })
+
+      if (!status && marked) {
+         const result = await StatusMutations.createStatus(root, args, context)
+         return { ...result, action: 'created' }
+      }
+
+      // If exists and new value is false
+      if (status && !marked) {
+         const result = await StatusMutations.deleteStatus(
+            root,
+            { id: status._id },
+            context
+         )
+         return { ...result, action: 'deleted' }
+      }
+
+      return null
+   },
+
    createStatus: async (root, args, context) => {
       if (!context?.currentUser?._id)
          throw new AuthenticationError('Not authenticated')
@@ -23,22 +58,6 @@ export const StatusMutations = {
          const { userId } = await Project.findById(args.projectId)
          if (userId.toString() !== context.currentUser._id.toString())
             throw new NotFoundError()
-
-         const statusAlreadyExists = await DayStatus.findOne({
-            projectId: args.projectId,
-            date: args.date,
-         })
-
-         if (statusAlreadyExists) {
-            const currentCount = await DayStatus.countDocuments({
-               projectId: args.projectId,
-            })
-
-            return {
-               status: null,
-               newCount: currentCount,
-            }
-         }
 
          const newStatus = new DayStatus({
             projectId: args.projectId,
@@ -84,7 +103,9 @@ export const StatusMutations = {
          })
 
          return {
-            id: args.id,
+            status: {
+               id: args.id,
+            },
             newCount,
          }
       } catch (err) {

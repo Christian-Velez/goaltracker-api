@@ -1,5 +1,5 @@
 export const StatusTypeDefs = `
-  type Status {
+   type Status {
       id: ID
       date: String
       value: Int
@@ -15,4 +15,9 @@ export const StatusTypeDefs = `
       newCount: Int
    }
 
+   type UpdateStatusResponse {
+      newCount: Int
+      status: Status
+      action: String
+   }
 `
