@@ -13,6 +13,10 @@ export const UserMutationsDefs = `
       password: String!
    ): UserResponse
 
+   updateUser(
+      name: String!
+   ) : User
+
    login(
       email: String!
       password: String!
@@ -25,7 +29,7 @@ export const UserMutations = {
       const passwordHash = await hashPassword(password)
 
       try {
-         const user = new User({ ...rest, password: passwordHash })
+         const user = new User({ ...rest, name: '', password: passwordHash })
          const savedUser = await user.save()
          const token = generateToken(savedUser)
 
@@ -33,6 +37,20 @@ export const UserMutations = {
             token,
             user: savedUser,
          }
+      } catch (err) {
+         throw new UserInputError(err.message)
+      }
+   },
+
+   updateUser: async (root, args, context) => {
+      if (!context?.currentUser?._id)
+         throw new AuthenticationError('Not authenticated')
+
+      const id = context.currentUser._id
+
+      try {
+         const user = await User.findByIdAndUpdate(id, args, { new: true })
+         return user
       } catch (err) {
          throw new UserInputError(err.message)
       }
