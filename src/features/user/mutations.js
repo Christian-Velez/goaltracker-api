@@ -32,7 +32,7 @@ export const UserMutations = {
       const passwordHash = await hashPassword(password)
 
       try {
-         const user = new User({ ...rest, name: '', password: passwordHash })
+         const user = new User({ ...rest, password: passwordHash })
          const savedUser = await user.save()
          const token = generateToken(savedUser)
 
