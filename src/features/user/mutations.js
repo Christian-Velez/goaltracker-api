@@ -15,6 +15,9 @@ export const UserMutationsDefs = `
 
    updateUser(
       name: String!
+      changePassword: Boolean!
+      currentPassword: String
+      newPassword: String
    ) : User
 
    login(
@@ -48,8 +51,23 @@ export const UserMutations = {
 
       const id = context.currentUser._id
 
+      if (args.changePassword) {
+         const user = await User.findById(id)
+         const passwordCorrect = await checkPassword(
+            args.currentPassword,
+            user.password
+         )
+
+         if (!passwordCorrect) throw new AuthenticationError('Invalid password')
+      }
+
       try {
-         const user = await User.findByIdAndUpdate(id, args, { new: true })
+         const passwordHash = await hashPassword(args.newPassword)
+         const user = await User.findByIdAndUpdate(
+            id,
+            { ...args, password: passwordHash },
+            { new: true }
+         )
          return user
       } catch (err) {
          throw new UserInputError(err.message)
